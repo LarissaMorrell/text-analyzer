@@ -9,20 +9,14 @@ $(document).ready(function() {
 
         //Get the input from textbox and then split to an array
         var input = $("#user-text").val();
-        var wordsList = input.replace(/^\s+|\s+$/gm,'').split(" ");
-        //wordsList.map(wordList.trim());
-
+        var wordsList = input.replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").split(" ");
+        console.log(wordsList);
 
         updateElement(wordsList.length, ".js-total-ct");
-
         updateElement(getUnique(wordsList), ".js-unique-ct");
-
         updateElement(getAvgWrdLgth(wordsList), ".js-word-length");
 
         var sentenceList = input.split(".");
-        //sentenceList.map(trim());
-
-        console.log(sentenceList);
         updateElement(getAvgSentLgth(sentenceList), ".js-sentence-length");
     });
 
@@ -32,29 +26,33 @@ $(document).ready(function() {
 
 function getUnique(wordsList) {
     var wordsObj = {};
-    var counter = 0;
 
+    //for every word in the list
     for (var i = 0; i < wordsList.length; i++) {
-    	
-    	wordsList[i] = wordsList[i].trim();
-        var currentWord = wordsList[i];
-        
-        var alreadyExists = false;
+        var currentWord = wordsList[i].trim();
 
+        var alreadyExists = false;
+        //for every key in wordsObj
         for (var word in wordsObj) {
+
             if (currentWord == word) {
                 alreadyExists = true;
-                counter--;
+                wordsObj[currentWord]++;
                 break;
-            } 
+            }
         }
-
         if (!alreadyExists) {
-            wordsObj[currentWord] = true;
-            counter++;
+            wordsObj[currentWord] = 1;
         }
     }
-    console.log(counter);
+
+    var counter = 0;
+    for (var word in wordsObj){
+        if (wordsObj[word] == 1) {
+            counter++;
+        }
+    };
+
     return counter;
 };
 
@@ -67,7 +65,6 @@ function getAvgWrdLgth(wordsList) {
     for (var i = 0; i < wordsList.length; i++) {
         sum += wordsList[i].length;
     }
-
     return sum / wordsList.length;
 };
 
@@ -79,7 +76,7 @@ function getAvgSentLgth(sentenceList) {
 
     for (var i = 0; i < sentenceList.length; i++) {
 
-    	sentenceList[i] = sentenceList[i].trim();
+        sentenceList[i] = sentenceList[i].trim();
         sum += sentenceList[i].length;
 
         if (sentenceList[i] != "") {
